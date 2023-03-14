@@ -1,0 +1,87 @@
+---
+title: "RideOn Cleaning - Gb and Gf"
+author: "Devon Milley"
+date: "2023-03-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Libraries
+```{r}
+library(readxl)
+library(writexl)
+library(tidyverse)
+library(janitor)
+library(dplyr)
+
+```
+#Cleaning
+```{r}
+#read in file
+rideon_gf <- read_excel("project data/Ride On Missed_Trips_2022.xlsx", sheet = "GF") %>% 
+  mutate(
+    Time_in_Svc = ""
+  ) %>% 
+  relocate(
+    Time_in_Svc, .before = EventType
+  ) %>% 
+  clean_names()
+
+rideon_gb <- read_excel("project data/Ride On Missed_Trips_2022.xlsx", sheet = "GB") %>% 
+  clean_names()
+
+#rideon_gb cleaning
+rideon_gb_clean <- rideon_gb %>% 
+  mutate(
+    date = as.Date(date), #this isnt working
+    runnum = as.numeric(runnum),
+    block = as.numeric(block),
+    route = as.numeric(route),
+    dest = str_squish(dest)
+  ) %>% 
+  mutate(
+    clean_dest = case_when(
+      dest == "\'LF" ~ "LF",
+      dest == "\'SE" ~ "SE",
+      dest == "CCJ" ~ "CJ",
+      dest == "gn" ~ "GN",
+      dest == "kv" ~ "KV",
+      dest == "Lakeforest" ~ "LF",
+      dest == "Lf" ~ "LF",
+      dest == "MC\'" ~ "MC",
+      dest == "rw" ~ "RW",
+      dest == "se" ~ "SE",
+      dest == "tt" ~ "TT",
+      TRUE ~ dest
+    )
+  ) %>% 
+  relocate(clean_dest, .after = dest)
+
+rideon_gb_clean %>% group_by(clean_dest) %>% summarise(count = n()) #can't figure out how to get rid of single quotes
+
+#ride on gf cleaning
+rideon_gf_clean <- rideon_gf %>% 
+  mutate(
+    date = as.Date(date), #this isnt worknig
+    runnum = as.numeric(runnum),
+    block = as.numeric(block),
+    route = as.numeric(route),
+    dest = str_squish(dest)
+  ) %>% 
+  mutate(
+    clean_dest = case_when(
+      dest == "SS\'" ~ "SS",
+      dest == "SSTc" ~ "SSTC",
+      dest == "SSSTC" ~ "SSTC",
+      TRUE ~ dest
+    )
+  )
+
+rideon_gf_clean %>%  group_by(clean_dest) %>% summarise(count = n())
+
+
+```
+
