@@ -11,14 +11,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #Libraries
 ```{r}
-library(readxl)
-library(writexl)
+#library(readxl)
+#library(writexl)
 library(tidyverse)
 library(janitor)
 library(dplyr)
 library(googlesheets4)
 
 ```
+
 #Cleaning
 ```{r}
 #read in file
@@ -56,6 +57,7 @@ rideon_gb_clean <- rideon_gb %>%
       dest == "rw" ~ "RW",
       dest == "se" ~ "SE",
       dest == "tt" ~ "TT",
+      dest == "MC MC" ~ "MC",
       TRUE ~ dest
     )
   ) %>% 
@@ -146,7 +148,7 @@ rideon_gf_clean <- rideon_gf %>%
     )
   )
 
-rideon_gf_clean %>%  group_by(weekday_weekend) %>% summarise(count = n())
+rideon_gb_clean %>%  group_by(clean_dest, dest_full) %>% summarise(count = n())
 
 
 ```
