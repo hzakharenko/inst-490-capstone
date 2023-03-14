@@ -1,0 +1,72 @@
+---
+title: "inst490-data-cleaning"
+output: html_document
+date: "2023-03-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+#Import libraries and data
+```{r}
+library(tidyverse)
+library(janitor)
+library(googlesheets4)
+
+NC <- read_sheet("https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet="NC")
+
+SS <- read_sheet("https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet="SS")
+```
+```{r}
+NC %>% 
+  mutate()
+```
+
+
+
+#Data cleaning
+```{r}
+###
+#checking variables for groups
+###
+
+
+#definitely issues with the spelling of destination, need to confirm each one and make common amongst them, remove errors
+dest <- NC %>%
+  group_by(Dest) %>% #Module, Date, Runnum, Block, Dest
+  summarise(count=n()) %>%
+  arrange(desc(count))
+
+
+#9 categories for this it appears
+time_in_svc <- NC %>%
+  group_by(Time_in_Svc) %>%
+  summarise(count=n()) %>%
+  arrange(desc(count))
+
+
+NC %>%
+  group_by(Runnum) %>% #EventType has 17ish options, MechProblem is written reasoning, missed is NULL 1 or 0, what does this mean?
+  summarise(count=n()) %>%
+  arrange(desc(count))
+#Location event lists a bunch of different codes, what do these coorespond to?
+```
+
+#Create a day of the week column in R and group by date and Runnum
+```{r}
+NC %>%
+
+```
+
+
+
+```{r}
+test <- NC %>%
+  pivot_longer(cols = c(EventType))
+```
+
+
+
