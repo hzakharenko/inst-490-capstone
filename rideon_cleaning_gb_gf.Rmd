@@ -16,12 +16,13 @@ library(writexl)
 library(tidyverse)
 library(janitor)
 library(dplyr)
+library(googlesheets4)
 
 ```
 #Cleaning
 ```{r}
 #read in file
-rideon_gf <- read_excel("project data/Ride On Missed_Trips_2022.xlsx", sheet = "GF") %>% 
+rideon_gf <- read_sheet("https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet = "GF") %>% 
   mutate(
     Time_in_Svc = ""
   ) %>% 
@@ -30,7 +31,7 @@ rideon_gf <- read_excel("project data/Ride On Missed_Trips_2022.xlsx", sheet = "
   ) %>% 
   clean_names()
 
-rideon_gb <- read_excel("project data/Ride On Missed_Trips_2022.xlsx", sheet = "GB") %>% 
+rideon_gb <- read_sheet("https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet = "GB") %>% 
   clean_names()
 
 #rideon_gb cleaning
@@ -58,9 +59,40 @@ rideon_gb_clean <- rideon_gb %>%
       TRUE ~ dest
     )
   ) %>% 
-  relocate(clean_dest, .after = dest)
+  relocate(clean_dest, .after = dest) %>% 
+  mutate(
+    dest_full = case_when(
+      clean_dest == "GB" ~ "Gaithersburg", #might not need
+      clean_dest == "NC" ~ "Nicholson Court/Kensington", #might not need
+      clean_dest == "SS" ~ "Silver Spring", #might not need
+      clean_dest == "GF" ~ "Gaithersburg Flash", #might not need
+      clean_dest == "GN" ~ "Germantown",
+      clean_dest == "MV" ~ "Montgomery Village",
+      clean_dest == "WH" ~ "Wheaton",
+      clean_dest == "GL" ~ "Glenmont",
+      clean_dest == "SE" ~ "Shady Grove East",
+      clean_dest == "SW" ~ "Shady Grove West",
+      clean_dest == "LF" ~ "Lake Forest",
+      clean_dest == "RR" ~ "Rockville",
+      clean_dest == "HC" ~ "Holy Cross Hospital",
+      clean_dest == "KV" ~ "King's View",
+      clean_dest == "CJ" ~ "Clarksburh",
+      clean_dest == "MC" ~ "Medical Center",
+      clean_dest == "RW" ~ "Rockville West",
+      clean_dest == "TE" ~ "Twin Brooke East",
+      clean_dest == "RE" ~ "Rockville East",
+      clean_dest == "QO" ~ "Quinn's Orchard"
+    )
+  ) %>% 
+  relocate(dest_full, .after = clean_dest)  %>% 
+  mutate(
+    weekday_weekend = case_when(
+      day_of_week == "Monday"| day_of_week == "Tuesday" | day_of_week == "Wednesday" | day_of_week == "Thursday" | day_of_week == "Friday" ~ "weekday",
+      TRUE ~ "weekend"
+    )
+  )
 
-rideon_gb_clean %>% group_by(clean_dest) %>% summarise(count = n()) #can't figure out how to get rid of single quotes
+#rideon_gb_clean %>% group_by(missed) %>% summarise(count = n()) #can't figure out how to get rid of single quotes
 
 #ride on gf cleaning
 rideon_gf_clean <- rideon_gf %>% 
@@ -78,9 +110,43 @@ rideon_gf_clean <- rideon_gf %>%
       dest == "SSSTC" ~ "SSTC",
       TRUE ~ dest
     )
+  ) %>% 
+  relocate(
+    clean_dest, .after = dest
+  ) %>% 
+  mutate(
+    dest_full = case_when(
+      clean_dest == "GB" ~ "Gaithersburg", #might not need
+      clean_dest == "NC" ~ "Nicholson Court/Kensington", #might not need
+      clean_dest == "SS" ~ "Silver Spring", #might not need
+      clean_dest == "GF" ~ "Gaithersburg Flash", #might not need
+      clean_dest == "GN" ~ "Germantown",
+      clean_dest == "MV" ~ "Montgomery Village",
+      clean_dest == "WH" ~ "Wheaton",
+      clean_dest == "GL" ~ "Glenmont",
+      clean_dest == "SE" ~ "Shady Grove East",
+      clean_dest == "SW" ~ "Shady Grove West",
+      clean_dest == "LF" ~ "Lake Forest",
+      clean_dest == "RR" ~ "Rockville",
+      clean_dest == "HC" ~ "Holy Cross Hospital",
+      clean_dest == "KV" ~ "King's View",
+      clean_dest == "CJ" ~ "Clarksburh",
+      clean_dest == "MC" ~ "Medical Center",
+      clean_dest == "RW" ~ "Rockville West",
+      clean_dest == "TE" ~ "Twin Brooke East",
+      clean_dest == "RE" ~ "Rockville East",
+      clean_dest == "QO" ~ "Quinn's Orchard"
+    )
+  ) %>% 
+  relocate(dest_full, .after = clean_dest) %>% 
+  mutate(
+    weekday_weekend = case_when(
+      day_of_week == "Monday"| day_of_week == "Tuesday" | day_of_week == "Wednesday" | day_of_week == "Thursday" | day_of_week == "Friday" ~ "weekday",
+      TRUE ~ "weekend"
+    )
   )
 
-rideon_gf_clean %>%  group_by(clean_dest) %>% summarise(count = n())
+rideon_gf_clean %>%  group_by(weekday_weekend) %>% summarise(count = n())
 
 
 ```
