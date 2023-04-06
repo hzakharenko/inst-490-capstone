@@ -20,10 +20,34 @@ NC <- read_sheet("https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQP
 
 SS <- read_sheet("https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet="SS")
 ```
+
+#calculate percentage of missed trips
 ```{r}
-NC %>% 
-  mutate()
+NC_total <- nrow(NC)
+SS_total <- nrow(SS)
+
+
+NC_route_counts <- NC %>% 
+  group_by(Route) %>%
+  summarise(count=n()) %>%
+  mutate(percentage = count/NC_total*100) %>%
+  arrange(desc(percentage))
+
+
+SS_route_counts <- SS %>%
+  group_by(Route) %>%
+  summarise(count=n()) %>%
+  mutate(percentage = count/NC_total*100) %>%
+  arrange(desc(percentage))
+
 ```
+
+```{r}
+sheet_write(NC_route_counts, ss="https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet="NC missed routes percentages")
+
+sheet_write(SS_route_counts, ss="https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet="SS missed routes percentages")
+```
+
 
 
 
@@ -58,6 +82,7 @@ NC %>%
 #Create a day of the week column in R and group by date and Runnum
 ```{r}
 NC %>%
+  
 
 ```
 
