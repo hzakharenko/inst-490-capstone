@@ -153,3 +153,38 @@ rideon_gb_clean %>%  group_by(clean_dest, dest_full) %>% summarise(count = n())
 
 ```
 
+# Calculating percentage of missed trips for each route
+```{r}
+gb_total <- nrow(rideon_gb)
+gf_total <- nrow(rideon_gf)
+
+
+gb_route_counts <- rideon_gb %>% 
+  group_by(route) %>% 
+  summarise(
+    count = n()
+  ) %>% 
+  mutate(
+    percentage = round((count/gb_total)*100, 2)
+  ) %>% 
+  arrange(desc(percentage))
+
+
+gf_route_counts <- rideon_gf %>% 
+  group_by(route) %>% 
+  summarise(
+    count = n()
+  ) %>% 
+  mutate(
+    percentage = round((count/gf_total)*100, 2)
+  ) %>% 
+  arrange(desc(percentage))
+
+```
+
+```{r}
+sheet_write(gb_route_counts, ss="https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet="GB missed routes percentages")
+
+sheet_write(gf_route_counts, ss="https://docs.google.com/spreadsheets/d/15e1yxUzol0nLw96nG-cHQPPsPV5OpkD3AP0iprFP7lU/edit#gid=96980819", sheet="GF missed routes percentages")
+```
+
