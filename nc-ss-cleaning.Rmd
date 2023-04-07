@@ -95,3 +95,47 @@ test <- NC %>%
 
 
 
+
+#The Bus data
+```{r}
+the_bus <- read_sheet("https://docs.google.com/spreadsheets/d/1TfrhX6KGOgUqPyYE7ef3cA6a8PACdRpggG1OpDnva4k/edit#gid=0")
+```
+
+
+```{r}
+
+route_missed_tripe <- the_bus %>% 
+  group_by(route) %>%
+  mutate(total_scheduled = sum(scheduled)) %>%
+  mutate(total_missed = sum(missed)) %>%
+  mutate(percentage_missed = total_missed/total_scheduled*100) %>%
+  select(route, total_scheduled, total_missed, percentage_missed) %>%
+  distinct()
+  
+sheet_write(route_missed_tripe, ss="https://docs.google.com/spreadsheets/d/1TfrhX6KGOgUqPyYE7ef3cA6a8PACdRpggG1OpDnva4k/edit#gid=0", sheet="missed_trips_by_route")
+
+```
+
+
+```{r}
+route_missed_trips_other <- the_bus %>% 
+  group_by(route) %>%
+  mutate(percentage_missed = mean(missed_of_scheduled))
+```
+
+```{r}
+route_missed_tripe <- the_bus %>% 
+  group_by(route) %>%
+  mutate(total_scheduled = sum(scheduled)) %>%
+  mutate(total_missed = sum(missed)) %>%
+  mutate(percentage_missed = total_missed/total_scheduled*100) %>%
+  select(route, total_scheduled, total_missed, percentage_missed) %>%
+  distinct()
+
+```
+
+
+
+
+
+
